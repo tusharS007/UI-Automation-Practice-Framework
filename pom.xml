@@ -8,6 +8,30 @@
 	<name>Automation-Assignment</name>
 	<description>Test Automation Framework for automationpractice.pl</description>
 
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.5</version>
+				<configuration>
+					<suiteXmlFiles>
+						<suiteXmlFile>testng.xml</suiteXmlFile>
+					</suiteXmlFiles>
+
+					<systemPropertyVariables>
+						<browser>${browser}</browser>
+						<isLmabdaTest>${isLmabdaTest}</isLmabdaTest>
+						<isHeadless>${isHeadless}</isHeadless>
+					</systemPropertyVariables>
+
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
@@ -44,6 +68,26 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>5.5.1</version>
+		</dependency>
+
+		<!-- Log4j API -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.24.1</version>
+		</dependency>
+
+		<!-- Log4j Core (MANDATORY) -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.24.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.aventstack</groupId>
+			<artifactId>extentreports</artifactId>
+			<version>5.1.2</version>
 		</dependency>
 
 	</dependencies>

@@ -1,70 +1,171 @@
 package com.utility;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import com.constant.Browser;
 
 public abstract class BrowserUtility {
 
-	private WebDriver driver;
-
+	private static ThreadLocal<WebDriver> driver = new ThreadLocal<WebDriver>();
+	Logger logger = LoggerUtility.getLogger(this.getClass());
+    
+	
 	public WebDriver getDriver() {
-		return driver;
-	}
-
-	public void setDriver(WebDriver driver) {
-		this.driver = driver;
+		return driver.get();
 	}
 
 	public BrowserUtility(WebDriver driver) {
 		super();
-		this.driver = driver;
+		this.driver.set(driver);
 	}
 
-	public BrowserUtility(Browser browserName) {
-		if (browserName == Browser.CHROME) {
-			driver = new ChromeDriver();
+	public BrowserUtility(String browserName) {
+		logger.info("Launching browser for " + browserName);
+		if (browserName.equalsIgnoreCase("chrome")) {
+
+			driver.set(new ChromeDriver());
+
 		}
 
-		else if (browserName == Browser.EDGE) {
-			driver = new EdgeDriver();
+		else if (browserName.equalsIgnoreCase("edge")) {
+
+			driver.set(new EdgeDriver());
+
 		}
 
-		else if (browserName == Browser.FIREFOX) {
-			driver = new FirefoxDriver();
+		else if (browserName.equalsIgnoreCase("firfox")) {
+
+			driver.set(new FirefoxDriver());
 		}
 
 		else {
-			System.err.println("Invalid Browser Name...Please select valid Browser Name");
+			logger.error("Invalid Browser Name...Please select valid Browser Name");
+		}
+	}
+
+	public BrowserUtility(Browser browserName) {
+		logger.info("Launching Browser for " + browserName);
+
+		if (browserName == Browser.CHROME) {
+			driver.set(new ChromeDriver());
+		}
+
+		else if (browserName == Browser.EDGE) {
+			driver.set(new EdgeDriver());
+
+		} else if (browserName == Browser.FIREFOX) {
+			driver.set(new FirefoxDriver());
+
+		}
+
+	}
+	
+	public BrowserUtility(Browser browserName, boolean isHeadless) {
+		logger.info("Launching browser for " + browserName);
+		if (browserName == Browser.CHROME) {
+			if (isHeadless) {
+				ChromeOptions options = new ChromeOptions();
+				options.addArguments("--headless=old");
+				options.addArguments("--window-size=1920,1080");
+				driver.set(new ChromeDriver(options));
+			} else {
+				driver.set(new ChromeDriver());
+			}
+			
+		} else if (browserName == Browser.EDGE) {
+
+			if (isHeadless) {
+				EdgeOptions options = new EdgeOptions();
+				options.addArguments("--headless=old");
+				options.addArguments("disable-gpu");
+				driver.set(new EdgeDriver(options));
+			} else {
+				driver.set(new EdgeDriver());
+			}
+		}
+
+		else if (browserName == Browser.FIREFOX) {
+
+			if (isHeadless) {
+				FirefoxOptions options = new FirefoxOptions();
+				options.addArguments("--headless=old");
+				driver.set(new FirefoxDriver(options));
+			} else {
+				driver.set(new FirefoxDriver());
+			}
+		}
+
+		else {
+			logger.error("Invalid Browser Name...Please select valid Browser Name");
 		}
 	}
 
 	public void goToWebsite(String url) {
-		driver.get(url);
+		logger.info("Visiting the website " + url);
+		driver.get().get(url);
 	}
 
 	public void maximizeWindow() {
-		driver.manage().window().maximize();
+		logger.info("Maximizing the window");
+		driver.get().manage().window().maximize();
 	}
 
 	public void clickOn(By locator) {
-		WebElement element = driver.findElement(locator);
+		logger.info("Finding the element to click " + locator);
+		WebElement element = driver.get().findElement(locator);
+		logger.info("Clicked the element");
 		element.click();
 	}
 
-	public void enterText(By Locator, String text) {
-		WebElement element = driver.findElement(Locator);
+	public void enterText(By locator, String text) {
+		logger.info("Finding the element to enter a " + text + "with locator" + locator);
+		WebElement element = driver.get().findElement(locator);
 		element.sendKeys(text);
 	}
 
 	public String getVisibleText(By locator) {
-		WebElement element = driver.findElement(locator);
+		logger.info("Finding the element to get Text " + locator);
+		WebElement element = driver.get().findElement(locator);
+		logger.info("Text is captured " + element.getText());
 		return element.getText();
+	}
+
+	public String takeScreenshot(String name) {
+		TakesScreenshot sceenshot = (TakesScreenshot) driver.get();
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");
+		String timeStamp = format.format(date);
+		File screenshotData = sceenshot.getScreenshotAs(OutputType.FILE);
+		String path = System.getProperty("user.dir") + "//screenshots//" + name + " - " + timeStamp + ".png";
+		File screenshotFile = new File(path);
+		try {
+			FileUtils.copyFile(screenshotData, screenshotFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return path;
+	}
+	
+	public void quit() {
+		driver.get().quit();
 	}
 
 }

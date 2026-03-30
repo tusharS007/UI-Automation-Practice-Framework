@@ -1,7 +1,6 @@
 package com.utility;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,9 +32,6 @@ public class CSVReaderUtility {
 				userData = new User(line[0], line[1]);
 				userList.add(userData);
 			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		}
 
 		catch (CsvValidationException | IOException e) {

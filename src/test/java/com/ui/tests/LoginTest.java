@@ -1,15 +1,14 @@
 package com.ui.tests;
 
-import static com.constant.Browser.CHROME;
 import static org.testng.Assert.assertEquals;
 
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import com.ui.pages.HomePage;
 import com.ui.pojo.User;
 
-public class LoginTest {
+@Listeners({com.ui.listners.TestListner.class})
+public class LoginTest extends TestBase {
 
 	/*
 	 * 
@@ -19,19 +18,13 @@ public class LoginTest {
 	 * 
 	 */
 
-	HomePage homePage;
-
-	@BeforeMethod(description = "Load the Homepage of the website")
-	public void setup() {
-		homePage = new HomePage(CHROME);
-	}
-
 	@Test(description = "Verify with the valid user is able to login to Application", groups = { "e2e",
 			"sanity" }, dataProviderClass = com.ui.dataprovider.LoginDataProvider.class, dataProvider = "loginTestJsonDataProvider")
 	public void loginTest(User user) {
 
 		assertEquals(homePage.goToLoginPage().doLoginWith(user.getEmailAddress(), user.getPassword()).getUserName(),
 				"Tushar Shelar");
+
 	}
 
 	@Test(description = "Verify with the valid user is able to login to Application", groups = { "e2e",
@@ -43,7 +36,8 @@ public class LoginTest {
 	}
 
 	@Test(description = "Verify with the valid user is able to login to Application", groups = { "e2e",
-			"sanity" }, dataProviderClass = com.ui.dataprovider.LoginDataProvider.class, dataProvider = "LoginTestExcelDataProvider")
+			"sanity" }, dataProviderClass = com.ui.dataprovider.LoginDataProvider.class, dataProvider = "LoginTestExcelDataProvider",
+			retryAnalyzer = com.ui.listner.MyRetryAnalyser.class)
 	public void loginExcelTest(User user) {
 
 		assertEquals(homePage.goToLoginPage().doLoginWith(user.getEmailAddress(), user.getPassword()).getUserName(),

@@ -1,11 +1,6 @@
 package com.ui.tests;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
-import com.ui.pages.HomePage;
-import com.ui.pages.LoginPage;
 
 public class LoginTest2 {
 
